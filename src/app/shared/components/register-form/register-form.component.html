@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="back-button" fill="clear" (click)="onCancel()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="title-style">{{ 'login.newUser' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="form-content">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" (keyup.enter)="onSubmit()">
+    <ion-item class="form-item">
+      <ion-input
+        class="form-input"
+        label="{{ 'login.username' | translate }}"
+        labelPlacement="floating"
+        formControlName="username"
+        type="text"
+        color="secondary"
+      ></ion-input>
+    </ion-item>
+    <ion-item class="form-item">
+      <ion-input
+        class="form-input"
+        label="{{ 'login.nickname' | translate }}"
+        labelPlacement="floating"
+        formControlName="nickname"
+        type="text"
+        color="secondary"
+      ></ion-input>
+    </ion-item>
+    <ion-item class="form-item">
+      <ion-input
+        class="form-input"
+        label="Email:"
+        labelPlacement="floating"
+        formControlName="email"
+        type="email"
+        color="secondary"
+      ></ion-input>
+    </ion-item>
+    <div class="password-row">
+      <ion-item class="form-item">
+        <ion-input
+          class="form-input"
+          label="{{ 'login.password' | translate }}"
+          labelPlacement="floating"
+          formControlName="password"
+          type="password"
+          color="secondary"
+        ></ion-input>
+      </ion-item>
+      <ion-item class="form-item">
+        <ion-input
+          class="form-input"
+          label="{{ 'login.confirmPassword' | translate }}"
+          labelPlacement="floating"
+          formControlName="confirm"
+          type="password"
+          color="secondary"
+        ></ion-input>
+      </ion-item>
+    </div>
+    <div class="error-message" *ngIf="hasError('password', 'passwordProto')">
+      {{ 'login.passwordError' | translate }}
+    </div>
+    <div class="error-message" *ngIf="hasError('confirm', 'passwordMatch', true)">
+      {{ 'login.confirmError' | translate }}
+    </div>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-button
+    class="footer-button"
+    type="submit"
+    shape="round"
+    [disabled]="!form.valid || !form.dirty"
+    class="ion-padding"
+    expand="full"
+    (click)="onSubmit()"
+    >{{ 'login.register' | translate }}</ion-button
+  >
+</ion-footer>

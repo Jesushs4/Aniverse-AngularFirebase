@@ -1,0 +1,41 @@
+<ion-menu contentId="main-content" side="end">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title id="menu-title">Aniverse</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-title id="menu-subtitle">{{'navbar.pages' | translate}}</ion-title>
+    <ion-buttons id="menu-buttons">
+      <ion-button (click)="goSearch()">{{'navbar.search' | translate}}</ion-button>
+      <ion-button (click)="goLibrary()">{{'navbar.library' | translate}}</ion-button>
+      <ion-button (click)="goAbout()">{{'navbar.about' | translate}}</ion-button>
+    </ion-buttons>
+    <ion-title id="user-subtitle">{{'navbar.user' | translate}}</ion-title>
+    <ion-buttons id="user-buttons">
+      <ion-button (click)="changeNickname()">{{'navbar.changenick' | translate}}</ion-button>
+      <ion-button (click)="logout()">{{'navbar.logout' | translate}}</ion-button>
+    </ion-buttons>
+  </ion-content>
+</ion-menu>
+<div class="ion-page" id="main-content">
+  <ion-header >
+    <ion-toolbar id="menu-toolbar">
+      <ion-buttons slot="start">
+        <ion-button *ngIf="lang === 'es'" (click)="onLang('en')">
+          <ion-icon slot="icon-only" name="language-outline"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="lang === 'en'" (click)="onLang('es')">
+          <ion-icon slot="icon-only" name="language-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      
+      <ion-title *ngIf="username!=null ">
+
+        {{'navbar.welcome' | translate}} {{username}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</div>

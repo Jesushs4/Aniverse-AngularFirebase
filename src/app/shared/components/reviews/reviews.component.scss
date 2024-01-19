@@ -1,0 +1,35 @@
+ion-card {
+  margin: 1rem 2rem;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+ion-card-header {
+  padding: 0.5rem;
+
+}
+
+
+
+.header-top,
+.header-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+}
+
+.header-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+}
+
+ion-card-content {
+  padding: 1rem;
+  font-size: 0.75rem;
+}

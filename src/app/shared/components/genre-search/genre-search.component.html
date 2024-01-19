@@ -1,0 +1,45 @@
+<div id="popover-button">
+  <ion-item [button]="!disabled" [detail]="!disabled">
+    <ion-text slot="start" position="fixed">{{'genre.genre' | translate}}:</ion-text>
+    <ion-text *ngIf="!genreSelected && !disabled"
+      >{{'genre.selectGenre' | translate}}</ion-text
+    >
+    <ion-text *ngIf="!genreSelected && disabled">{{'genre.noGenre' | translate}}</ion-text>
+    <ion-text *ngIf="genreSelected">{{ genreSelected }}</ion-text>
+  </ion-item>
+</div>
+<ion-popover *ngIf="!disabled" trigger="popover-button" #popover>
+  <ng-template>
+    <ion-content>
+      <ion-list>
+        <ion-item>
+          <ion-input
+            #search
+            placeholder="Buscar"
+            type="text"
+            (ionInput)="onFilter($event)"
+            debounce="200"
+          ></ion-input>
+          <ion-button
+            color="medium"
+            slot="end"
+            fill="clear"
+            (click)="clearSearch(search)"
+          >
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <ion-item button (click)="deselect(popover)">
+          <ion-text>{{'genre.noGenre' | translate}}</ion-text>
+        </ion-item>
+        <ion-item
+          button
+          *ngFor="let genre of genres"
+          (click)="onGenreClicked(popover, genre)"
+        >
+          <ion-text>{{ genre.name }}</ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-popover>

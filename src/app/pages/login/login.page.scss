@@ -1,0 +1,38 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.page-title {
+  font-weight: bold;
+  color: var(--ion-color-secondary);
+}
+
+ion-card {
+  background: rgba(42, 42, 42, 0.95);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+ion-card-header {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+ion-thumbnail {
+  margin-bottom: 20px;
+}
+
+ion-button {
+  margin-bottom: 20px;
+}
+

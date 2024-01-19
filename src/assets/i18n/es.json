@@ -1,0 +1,86 @@
+{
+    "login": {
+        "noAccount": "¿Necesitas una cuenta?",
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "nickname": "Apodo",
+        "confirmPassword": "Confirmar contraseña",
+        "confirmError": "Las contraseñas no coinciden.",
+        "passwordError": "La contraseña debe tener 1 mayúscula, 1 número y 8 caracteres.",
+        "login": "Acceder",
+        "register": "Registrarse",
+        "newUser": "Nuevo usuario"
+    },
+    "search": {
+        "searchAnime": "Busca tu anime",
+        "search": "Busca..."
+
+    },
+    "navbar": {
+        "welcome": "Bienvenido, ",
+        "pages": "Páginas",
+        "search": "Buscador",
+        "library": "Biblioteca",
+        "about": "Sobre mí",
+        "user": "Usuario",
+        "changenick": "Cambiar apodo",
+        "change": "Cambiar",
+        "newnick": "Nuevo apodo",
+        "logout": "Cerrar sesión"
+    },
+    "anime": {
+        "episodes": "Episodios",
+        "episode": "Episodio",
+        "status": "Estado",
+        "watching": "Viendo",
+        "planned": "Por ver",
+        "completed": "Terminado",
+        "year": "Año de salida",
+        "score": "Puntuación",
+        "noScore": "Sin puntuar",
+        "addLibrary": "Añadir a biblioteca",
+        "alreadyAdded": "Añadido",
+        "add": "Añadir",
+        "edit": "Editar",
+        "addAnime": "Añadir anime",
+        "editAnime": "Editar anime",
+        "selectScore": "Seleccione puntuación",
+        "selectStatus": "Seleccione el estado",
+        "userInfo": "Información del usuario",
+        "synopsis": "Sinopsis",
+        "goBack": "Volver",
+        "episodesWatched": "Episodios vistos",
+        "seeMore": "Ver más"
+    },
+    "genre": {
+        "selectGenre": "Seleccione un género",
+        "genre": "Género",
+        "noGenre": "Sin seleccionar"
+    },
+    "review": {
+        "review": "Reseña",
+        "reviews": "Reseñas",
+        "createReview": "Crear reseña",
+        "post": "Publicar",
+        "user": "Usuario",
+        "summary": "Resumen",
+        "editReview": "Editar reseña",
+        "date": "Fecha"
+    },
+    "toast": {
+        "addReview": "Se ha publicado la reseña",
+        "alreadyReview": "Error: Ya tienes una reseña",
+        "editReview": "Se ha editado la reseña",
+        "editAnime": "Se ha editado el anime",
+        "addAnime": "Se ha añadido a la biblioteca",
+        "deleteAnime": "Se ha borrado el anime",
+        "deleteReview": "Se ha borrado la reseña",
+        "userCreated": "Se ha creado el usuario",
+        "nicknameChanged": "Se ha modificado el apodo"
+    },
+    "about": {
+        "aboutTitle": "Esta página fue creada basandose en myAnimeList y usando la API de Jikan.",
+        "moreInfo": "Para más información sobre mí y mis trabajos, podéis clickar en el siguiente enlace",
+        "github": "Visita mi GitHub"
+    }
+}

@@ -1,0 +1,33 @@
+<ion-card>
+  <ion-card-header>
+    <div class="header-top">
+      <ion-card-title>{{ review?.summary }}</ion-card-title>
+    </div>
+    <div class="header-bottom">
+      <ion-card-subtitle
+        >{{('review.user' | translate)}}: {{ review?.nickname }} - {{('anime.score' | translate)}}:
+        {{
+          review?.user_score === 0 ? ('anime.noScore' | translate) : review?.user_score
+        }}</ion-card-subtitle
+      >
+      <div class="review-date">{{'review.date' | translate}}: {{ review?.date_added }}</div>
+    </div>
+  </ion-card-header>
+
+  <ion-card-content>
+    {{ review?.review }}
+  </ion-card-content>
+  <div class="header-buttons" *ngIf="review?.own_review == true">
+    <ion-toolbar>
+      <ion-buttons slot="end">
+        <ion-button color="secondary" (click)="onReview()">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button color="danger" (click)="deleteReview(review!)">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+    
+  </div>
+</ion-card>

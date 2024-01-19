@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="primary" fill="clear" (click)="onCancel()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ mode == "New" ? ('anime.addAnime' | translate) : ('anime.editAnime' | translate) }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="content-container">
+    <div class="image-container">
+      <img
+        src="{{ animeInfo?.images?.jpg?.image_url }}"
+        alt="{{ animeInfo?.title }}"
+      />
+    </div>
+    <div class="form-container">
+      <h2>{{ animeInfo?.title }}</h2>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <ion-item>
+          <ion-select
+            label="{{'anime.score' | translate}}"
+            placeholder="{{'anime.selectScore' | translate}}"
+            interface="popover"
+            labelPlacement="stacked"
+            formControlName="user_score"
+            color="secondary"
+          >
+            <ion-select-option [value]="0">{{'anime.noScore' | translate}}</ion-select-option>
+            <ion-select-option [value]="1">1</ion-select-option>
+            <ion-select-option [value]="2">2</ion-select-option>
+            <ion-select-option [value]="3">3</ion-select-option>
+            <ion-select-option [value]="4">4</ion-select-option>
+            <ion-select-option [value]="5">5</ion-select-option>
+            <ion-select-option [value]="6">6</ion-select-option>
+            <ion-select-option [value]="7">7</ion-select-option>
+            <ion-select-option [value]="8">8</ion-select-option>
+            <ion-select-option [value]="9">9</ion-select-option>
+            <ion-select-option [value]="10">10</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-select
+            label="{{'anime.status' | translate}}"
+            placeholder="{{'anime.selectStatus' | translate}}"
+            interface="popover"
+            labelPlacement="stacked"
+            formControlName="watch_status"
+            color="secondary"
+          >
+            <ion-select-option value="watching">{{'anime.watching' | translate}}</ion-select-option>
+            <ion-select-option value="plan to watch"
+              >{{'anime.planned' | translate}}</ion-select-option
+            >
+            <ion-select-option value="completed">{{'anime.completed' | translate}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="form.get('watch_status')?.value == 'watching'">
+          <ion-input
+            label="{{'anime.episode' | translate}} (1-{{ animeInfo?.episodes ?? 'N/A' }}):"
+            labelPlacement="floating"
+            formControlName="episodes_watched"
+            color="secondary"
+            type="number"
+            [min]="1"
+            [max]="animeInfo?.episodes ?? 1000"
+          ></ion-input>
+        </ion-item>
+      </form>
+    </div>
+  </div>
+</ion-content>
+<ion-footer>
+  <ion-button
+    class="submit"
+    type="submit"
+    [disabled]="!form.valid || !form.dirty"
+    (click)="onSubmit()"
+    >{{ mode == "New" ? ('anime.add' | translate) : ('anime.edit' | translate) }}</ion-button
+  >
+</ion-footer>

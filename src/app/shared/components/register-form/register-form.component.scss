@@ -1,0 +1,41 @@
+ion-toolbar {
+  color: rgb(114, 194, 219);
+}
+
+.title-style {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.form-item {
+  padding: 0.5rem;
+  margin-bottom: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  flex: 1;
+}
+
+.password-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.form-input {
+  font-size: 16px;
+}
+
+.footer-button {
+  background-color: #00acc1;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 14px;
+  padding: 2px;
+  text-align: center;
+}

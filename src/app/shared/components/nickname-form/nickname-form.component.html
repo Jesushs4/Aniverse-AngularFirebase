@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar class="custom-toolbar">
+    <ion-buttons slot="start">
+      <ion-button color="primary" fill="clear" (click)="onCancel()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{'navbar.changenick' | translate}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="custom-content">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="custom-form">
+    <ion-item class="custom-item">
+      <ion-input
+        label="{{'navbar.newnick' | translate}}"
+        labelPlacement="floating"
+        formControlName="nickname"
+      ></ion-input>
+    </ion-item>
+    <ion-button
+      type="submit"
+      [disabled]="!form.valid || !form.dirty"
+      (click)="onSubmit()"
+      expand="full"
+      class="submit-button"
+      >{{'navbar.change' | translate}}</ion-button
+    >
+  </form>
+</ion-content>

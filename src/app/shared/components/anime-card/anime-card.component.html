@@ -1,0 +1,32 @@
+<ion-card button appCardText *ngIf="!isSearchPage()">
+  <div class="anime-card">
+    <img src="{{ anime?.images?.jpg?.image_url }}" alt="{{ anime?.title }}" />
+  </div>
+  <ion-card-header>
+    <ion-card-title>{{ anime?.title }}</ion-card-title>
+    <ion-card-subtitle>{{ anime?.title_english }}</ion-card-subtitle>
+  </ion-card-header>
+  <ion-card-content>
+    <p>{{'anime.episodes' | translate}}: {{ anime?.episodes ?? "N/A" }}</p>
+    <p>{{'anime.status' | translate}}: {{ anime?.status ?? "N/A" }}</p>
+    <p>{{'anime.year' | translate}}: {{ anime?.year ?? "N/A" }}</p>
+  </ion-card-content>
+</ion-card>
+
+<ion-card *ngIf="isSearchPage()">
+  <div class="anime-card">
+    <img src="{{ anime?.images?.jpg?.image_url }}" alt="{{ anime?.title }}" />
+  </div>
+  <ion-card-header>
+    <ion-card-title>{{ anime?.title }}</ion-card-title>
+    <ion-card-subtitle>{{ anime?.title_english }}</ion-card-subtitle>
+  </ion-card-header>
+  <ion-card-content>
+    <p>{{'anime.episodes' | translate}}: {{ anime?.episodes ?? "N/A" }}</p>
+    <p>{{'anime.status' | translate}}: {{ anime?.status ?? "N/A" }}</p>
+    <p>{{'anime.year' | translate}}: {{ anime?.year ?? "N/A" }}</p>
+  </ion-card-content>
+  <ion-button class="libButton" (click)="addToLibrary()"
+    >{{'anime.addLibrary' | translate}}</ion-button
+  >
+</ion-card>

@@ -1,0 +1,40 @@
+#menu-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: black;
+  padding-top: 1rem;
+}
+
+#menu-title {
+  text-align: center;
+  font-size: 2rem;
+}
+
+#menu-subtitle {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:black
+}
+
+#user-subtitle {
+  padding-top: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color:black
+}
+
+#user-buttons {
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: black;
+}
+
+#menu-toolbar {
+  text-align: right;
+}
+

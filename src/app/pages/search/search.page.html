@@ -1,0 +1,11 @@
+<ion-content>
+  <div id="search-bar">
+    <app-search-bar (searchUpdate)="searchResult($event)"></app-search-bar>
+  </div>
+  <div id="anime-card">
+    <app-anime-card
+      *ngFor="let anime of searchResults$ | async"
+      [anime]="anime"
+    ></app-anime-card>
+  </div>
+</ion-content>

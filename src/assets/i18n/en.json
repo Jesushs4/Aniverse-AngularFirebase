@@ -1,0 +1,86 @@
+{
+    "login": {
+        "noAccount": "Need an account?",
+        "username": "Username",
+        "password": "Password",
+        "nickname": "Nickname",
+        "confirmPassword": "Confirm password",
+        "confirmError": "Passwords do not match.",
+        "passwordError": "Password requires 1 uppercase, 1 number and 8 characters.",
+        "login": "Login",
+        "register": "Register",
+        "newUser": "New user"
+    },
+    "search": {
+        "searchAnime": "Search your anime",
+        "search": "Search..."
+    },
+    "navbar": {
+        "welcome": "Welcome, ",
+        "pages": "Pages",
+        "search": "Search",
+        "library": "Library",
+        "about": "About me",
+        "user": "User",
+        "changenick": "Change nickname",
+        "change": "Change",
+        "newnick": "New nickname",
+        "logout": "Logout"
+    } ,
+    "anime": {
+        "episodes": "Episodes",
+        "episode": "Episode",
+        "status": "Status",
+        "watching": "Watching",
+        "planned": "Plan to watch",
+        "completed": "Completed",
+        "year": "Year released",
+        "score": "Score",
+        "noScore": "Not scored",
+        "addLibrary": "Add to library",
+        "alreadyAdded": "Added",
+        "add": "Add",
+        "edit": "Edit",
+        "addAnime": "Add anime",
+        "editAnime": "Edit anime",
+        "selectScore": "Select score",
+        "selectStatus": "Select status",
+        "userInfo": "User information",
+        "synopsis": "Synopsis",
+        "goBack": "Go back",
+        "episodesWatched": "Episodes watched",
+        "seeMore": "See more"
+    },
+    "genre": {
+        "selectGenre": "Choose a genre",
+        "genre": "Genre",
+        "noGenre": "Not selected"
+    },
+    "review": {
+        "review": "Review",
+        "reviews": "Reviews",
+        "createReview": "Create review",
+        "post": "Post",
+        "user": "User",
+        "summary": "Summary",
+        "editReview": "Edit review",
+        "date": "Date"
+
+    },
+    "toast": {
+        "addReview": "Review has been published",
+        "alreadyReview": "Error: You already have one review",
+        "editReview": "Review has been edited",
+        "editAnime": "Anime has been edited",
+        "addAnime": "Anime added to library",
+        "deleteAnime": "Anime has been deleted",
+        "deleteReview": "Review has been deleted",
+        "userCreated": "Se ha creado el usuario",
+        "nicknameChanged": "Nickname has been changed"
+    },
+    "about": {
+        "aboutTitle": "This page was created based on myAnimeList and using Jikan's API.",
+        "moreInfo": "For more information about me and my projects, you can click on the link.",
+        "github": "Visit my GitHub"
+    }
+}

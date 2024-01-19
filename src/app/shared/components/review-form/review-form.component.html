@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="primary" fill="clear" (click)="onCancel()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ mode == "New" ? ('review.createReview' | translate) : ('review.editReview' | translate) }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <ion-item class="summary">
+    <ion-input
+      label="{{'review.summary' | translate}}:"
+      labelPlacement="floating"
+      formControlName="summary"
+      type="string"
+      color="secondary"
+    ></ion-input>
+  </ion-item>
+  <ion-item class="review">
+    <ion-textarea
+      label="{{'review.review' | translate}}:"
+      labelPlacement="floating"
+      formControlName="review"
+      class="review-textarea"
+      type="string"
+      color="secondary"
+    ></ion-textarea>
+  </ion-item>
+</form>
+<div class="submit">
+  <ion-button type="submit"  (click)="onSubmit()" [disabled]="!form.valid || !form.dirty"
+  >{{ mode == "New" ? ('review.post' | translate) : ('review.editReview' | translate) }}
+</ion-button>
+</div>
+
