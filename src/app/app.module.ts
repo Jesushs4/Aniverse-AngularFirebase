@@ -12,23 +12,36 @@ import { ApiService } from './core/services//strapi/api.service';
 import { JwtService } from './core/services/http/jwt.service';
 import { AuthStrapiService } from './core/services/strapi/auth-strapi.service';
 import { HttpClientProvider } from './core/services/http/http-client.provider';
-import { AuthService } from './core/services/strapi/auth.service';
-import { ExpandableDirective } from './shared/directives/expandable.directive';
+import { AuthService } from './core/services/auth.service';
 import { SharedModule } from './shared/shared.module';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { createTranslateLoader } from './core/services/custom-translate.service';
+import { environment } from 'src/environments/environment';
+import { FirebaseService } from './core/services/firebase.service';
+import { FirebaseAuthService } from './core/services/firebase/firebase-auth.service';
 
 export function httpProviderFactory(
   http: HttpClient) {
   return new HttpClientWebProvider(http);
 }
 
-export function AuthServiceProvider(
-  jwt: JwtService,
-  api: ApiService
+
+export function AuthServiceFactory(
+  backend:string,
+  jwt:JwtService,
+  api:ApiService,
+  firebase:FirebaseService
 ) {
-  return new AuthStrapiService(jwt, api);
+    switch(backend){
+      case 'Strapi':
+        return new AuthStrapiService(jwt, api);
+      case 'Firebase':
+        return new FirebaseAuthService(firebase);
+      default:
+        throw new Error("Not implemented");
+    }
 }
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -46,10 +59,19 @@ export function AuthServiceProvider(
       deps: [HttpClient, Platform],
       useFactory: httpProviderFactory,
     },
+    
+    {
+      provide: 'firebase-config',
+      useValue:environment.firebaseConfig
+    },
+    {
+      provide: 'backend',
+      useValue:'Firebase'
+    },
     {
       provide: AuthService,
-      deps: [JwtService, ApiService],
-      useFactory: AuthServiceProvider,
+      deps: ['backend',JwtService, ApiService, FirebaseService],
+      useFactory: AuthServiceFactory,
     }
   ],
   bootstrap: [AppComponent],

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, last, lastValueFrom } from 'rxjs';
 import { CreateReview, Review } from '../interfaces/review';
-import { AuthService } from './strapi/auth.service';
+import { AuthService } from './auth.service';
 import { LibraryService } from './library.service';
 import { ApiService } from './strapi/api.service';
 import { Anime } from '../interfaces/anime';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController, ModalController, ToastController, ToastOptions } from '@ionic/angular';
-import { AuthService } from 'src/app/core/services/strapi/auth.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { NicknameFormComponent } from '../nickname-form/nickname-form.component';
 import { Observable, lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/services/strapi/api.service';

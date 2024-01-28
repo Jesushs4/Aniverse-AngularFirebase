@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, lastValueFrom, switchMap, tap } from 'rxjs';
 import { Anime, Library } from '../interfaces/anime';
 import { ApiService } from './strapi/api.service';
-import { AuthService } from './strapi/auth.service';
+import { AuthService } from './auth.service';
 import { User } from '../interfaces/user';
 import { AnimeService } from './anime.service';
 

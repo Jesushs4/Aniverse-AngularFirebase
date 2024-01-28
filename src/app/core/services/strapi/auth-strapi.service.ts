@@ -4,7 +4,7 @@ import { UserCredentials } from '../../interfaces/user-credentials';
 import { UserRegisterInfo } from '../../interfaces/user-register-info';
 import { JwtService } from '../http/jwt.service';
 import { ApiService } from './api.service';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth.service';
 import { StrapiExtendedUser, StrapiLoginPayload, StrapiLoginResponse, StrapiRegisterPayload, StrapiRegisterResponse, StrapiUser } from '../../interfaces/strapi';
 import { User } from '../../interfaces/user';
 

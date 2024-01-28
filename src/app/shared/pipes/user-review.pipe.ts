@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Review } from 'src/app/core/interfaces/review';
-import { AuthService } from 'src/app/core/services/strapi/auth.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Pipe({
   name: 'userReview'

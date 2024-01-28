@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { ModalController, ToastController, ToastOptions } from '@ionic/angular';
 import { UserCredentials } from 'src/app/core/interfaces/user-credentials';
 import { UserRegisterInfo } from 'src/app/core/interfaces/user-register-info';
-import { AuthService } from 'src/app/core/services/strapi/auth.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { CustomTranslateService } from 'src/app/core/services/custom-translate.service';
+import { FirebaseAuthService } from 'src/app/core/services/firebase/firebase-auth.service';
 import { RegisterFormComponent } from 'src/app/shared/components/register-form/register-form.component';
 
 @Component({
@@ -30,7 +31,8 @@ export class LoginPage implements OnInit {
     private router: Router,
     private modal: ModalController,
     private toast: ToastController,
-    private translate: CustomTranslateService
+    private translate: CustomTranslateService,
+    private firebaseAuth: FirebaseAuthService
   ) { }
 
   ngOnInit() {
@@ -51,7 +53,7 @@ export class LoginPage implements OnInit {
   }
 
   onLogin(credentials: UserCredentials) {
-    this.auth.login(credentials).subscribe({
+    this.firebaseAuth.login(credentials).subscribe({
       next: data => {
         this.router.navigate(['search'])
       },
@@ -81,7 +83,7 @@ export class LoginPage implements OnInit {
     var onDismiss = (info: any) => {
       switch (info.role) {
         case 'ok': {
-          this.auth.register(info.data).subscribe(async user => {
+          this.firebaseAuth.register(info.data).subscribe(async user => {
             this.translate.get('toast.userCreated').subscribe(async (translatedMessage: string) => {
               const options: ToastOptions = {
                 message: translatedMessage,
