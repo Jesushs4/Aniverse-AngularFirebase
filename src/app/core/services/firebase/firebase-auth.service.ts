@@ -13,10 +13,30 @@ import { Injectable } from '@angular/core';
 export class FirebaseAuthService extends AuthService{
 
   constructor(
-    private firebaseSvc:FirebaseService
+    private firebaseSvc:FirebaseService,
   ) { 
     super();
+
+    this.firebaseSvc.isLogged$.subscribe(logged=>{
+      if(logged){
+        this.me().subscribe({
+          next:data=>{
+            this._user.next(data);
+            this._logged.next(true);
+          },
+          error:err=>{
+            console.log(err);
+          }
+        });
+      }
+      else{
+        this._logged.next(false);
+        this._user.next(null);
+      }
+    })
   }
+
+  
 
   public login(credentials:UserCredentials):Observable<any>{
       return new Observable<any>(subscr=>{
@@ -44,11 +64,12 @@ export class FirebaseAuthService extends AuthService{
           subscr.error('Cannot register');
         if(credentials){
           console.log("CREDENTIALS",credentials);
-          info.uuid = credentials.user.user.uid;
-          this.postRegister(info).subscribe(data=>{
-            this._user.next(data);
+          var _info:UserRegisterInfo = {...info};
+          _info.uuid = this.firebaseSvc.user!.uid;
+          this.postRegister(_info).subscribe(data=>{
+            this._user.next(_info);
             this._logged.next(true);
-            subscr.next(data);
+            subscr.next(_info);
             subscr.complete();
           });
         }

@@ -84,6 +84,7 @@ export class LoginPage implements OnInit {
       switch (info.role) {
         case 'ok': {
           this.firebaseAuth.register(info.data).subscribe(async user => {
+            this.router.navigate(['search'])
             this.translate.get('toast.userCreated').subscribe(async (translatedMessage: string) => {
               const options: ToastOptions = {
                 message: translatedMessage,
