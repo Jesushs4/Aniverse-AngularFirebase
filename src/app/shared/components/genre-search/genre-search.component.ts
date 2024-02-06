@@ -3,6 +3,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonInput, IonPopover } from '@ionic/angular';
 import { lastValueFrom } from 'rxjs';
 import { Genre } from 'src/app/core/interfaces/genre';
+import { FirebaseService } from 'src/app/core/services/firebase.service';
+import { FirebaseAuthService } from 'src/app/core/services/firebase/firebase-auth.service';
+import { LibraryService } from 'src/app/core/services/library.service';
 import { ApiService } from 'src/app/core/services/strapi/api.service';
 
 export const GENRESEARCH_SELECTABLE_VALUE_ACCESSOR: any = {
@@ -28,13 +31,30 @@ export class GenreSearchComponent implements OnInit, ControlValueAccessor {
 
   propagateChange = (obj: any) => { };
 
-  constructor(public apiService: ApiService) { }
+  constructor(public apiService: ApiService, public firebaseService: FirebaseService, public firebaseAuth: FirebaseAuthService, private libraryService: LibraryService) { }
 
   async ngOnInit() {
-    let response = (await lastValueFrom(this.apiService.get(`/genres/`))).data;
-    this.allGenres = response.map((genre: { attributes: { name: any; }; }) => ({ name: genre.attributes.name }));
-    this.genres = this.allGenres
-
+    // Asumiendo que firebaseService ya tiene un método getLibrary()
+    if (this.firebaseAuth.user$) {
+      const userUid = this.firebaseService.user!.uid;
+      try {
+        const library = this.libraryService.getLibrary(); // Implementa este método en FirebaseService
+        const genreSet = new Set<string>(); // Usamos un Set para evitar géneros duplicados
+        library.forEach(anime => {
+          console.log(anime);
+          anime.forEach(animeGenre => {
+            animeGenre.genres.forEach((genre: { name: string; }) => {
+              genreSet.add(genre.name); // Asume que cada género tiene una propiedad 'name'
+          })
+          });
+        });
+        console.log(genreSet);
+        this.allGenres = Array.from(genreSet).map(name => ({ name }));
+        this.genres = this.allGenres;
+      } catch (error) {
+        console.error('Error al obtener los géneros de la biblioteca:', error);
+      }
+    }
   }
 
   writeValue(obj: any): void {

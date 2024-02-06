@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, lastValueFrom, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, from, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { Anime, Library } from '../interfaces/anime';
 import { ApiService } from './strapi/api.service';
 import { AuthService } from './auth.service';
 import { User } from '../interfaces/user';
 import { AnimeService } from './anime.service';
+import { FirebaseService } from './firebase.service';
+import { FirebaseAuthService } from './firebase/firebase-auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +24,9 @@ export class LibraryService {
   constructor(
     private auth: AuthService,
     private apiService: ApiService,
-    private animeService: AnimeService
+    private animeService: AnimeService,
+    private firebaseService: FirebaseService,
+    private firebaseAuth: FirebaseAuthService
   ) {
 
   }
@@ -46,100 +50,94 @@ export class LibraryService {
     })
   }
 
-  getAnimeById(mal_id: number): Observable<Anime> { // Obtener anime mediante id
+  getAnimeById(mal_id: number): Observable<any> {
     return new Observable(observer => {
-      this.auth.me().subscribe({
-        next: async (user: User) => {
-
-          let anime = await lastValueFrom(this.apiService.get(`/libraries?filters[user][id][$eq]=${user.id}&filters[anime][mal_id][$eq]=${mal_id}&populate=anime`));
-          let newAnime = {
-            id: anime.data[0].id,
-            title: anime.data[0].attributes.anime.data[0].attributes.title,
-            title_english: anime.data[0].attributes.anime.data[0].attributes.title_english,
-            episodes: anime.data[0].attributes.anime.data[0].attributes.episodes,
-            status: anime.data[0].attributes.anime.data[0].attributes.status,
-            synopsis: anime.data[0].attributes.anime.data[0].attributes.synopsis,
-            year: anime.data[0].attributes.anime.data[0].attributes.year,
-            images: {
-              jpg: {
-                image_url: anime.data[0].attributes.anime.data[0].attributes.image_url,
-              }
-            },
-            genres: anime.data[0].attributes.anime.data[0].attributes.genres,
-            favorites: anime.data[0].attributes.anime.data[0].attributes.favorites,
-            mal_id: anime.data[0].attributes.anime.data[0].attributes.mal_id,
-            episodes_watched: anime.data[0].attributes.episodes_watched,
-            watch_status: anime.data[0].attributes.watch_status,
-            user_score: anime.data[0].attributes.user_score
-          }
-          this._anime.next(newAnime);
-          observer.next(newAnime);
-          this.anime = newAnime;
+      if (!this.firebaseService.user) {
+        observer.error('Usuario no autenticado');
+        return;
+      }
+      const userUid = this.firebaseService.user.uid;
+  
+      // Primero, busca el anime por mal_id en la colección de animes.
+      this.firebaseService.getDocumentsBy('animes', 'mal_id', mal_id).then(animeDocuments => {
+        if (animeDocuments.length === 0) {
+          observer.error('Anime no encontrado');
+          return;
         }
-      })
-    })
+        const animeData = animeDocuments[0].data; // Asumimos que mal_id es único.
+  
+        // Luego, busca en la colección 'library' del usuario por el mismo anime.
+        this.firebaseService.getDocumentsBy(`users/${userUid}/library`, 'mal_id', mal_id).then(libraryDocuments => {
+          if (libraryDocuments.length === 0) {
+            observer.error('Información de la biblioteca no encontrada');
+            return;
+          }
+          const libraryData = libraryDocuments[0].data;
+  
+          // Combina la información del anime con la de la biblioteca del usuario.
+          const combinedData = {
+            title: animeData['title'],
+            title_english: animeData['title_english'],
+            episodes: animeData['episodes'],
+            status: animeData['status'],
+            synopsis: animeData['synopsis'],
+            year: animeData['year'],
+            images: { jpg: { image_url: animeData['image_url'] } },
+            genres: animeData['genres'],
+            favorites: animeData['favorites'],
+            mal_id: animeData['mal_id'],
+            episodes_watched: libraryData['episodes_watched'],
+            watch_status: libraryData['watch_status'],
+            user_score: libraryData['user_score'],
+          };
+  
+          observer.next(combinedData);
+          observer.complete();
+  
+        }).catch(error => observer.error(error));
+      }).catch(error => observer.error(error));
+    });
   }
 
-  getLibrary(): Observable<Anime[]> { // Mostrar libreria
-    return new Observable<Anime[]>(obs => {
-      this.auth.me().subscribe({
-        next: async (user: User) => {
-          let response = await lastValueFrom(this.apiService.get(`/libraries?filters[user][id][$eq]=${user.id}&populate=anime`));
-          let genresresponse = await lastValueFrom(this.apiService.get(`/animegenres?populate=anime,genre`));
-          var animesWithGenres = genresresponse.data.flatMap((item: // Flatmap para evitar arrays dentro de arrays innecesarios
-            {
-              attributes:
-              {
-                anime:
-                { data: any[]; };
-                genre:
-                { data: any[]; };
-              };
-            }) => {
-            return item.attributes.anime.data.map(animeData => { // Mapeamos para tener por cada anime sus respectivos generos en un array
-              let animeMalId = animeData.attributes.mal_id;
-              let genreNames = item.attributes.genre.data.map(genre => genre.attributes.name);
-              return {
-                anime: animeMalId,
-                genre: genreNames
-              };
-            });
-          });
-
-
-          let animes: Anime[] = []
-
-          for (const anime of response.data) {
-            let animeId = anime.attributes.anime.data[0].attributes.mal_id; // Encontramos que géneros tiene el anime que se está iterando
-            let animeGenres = animesWithGenres.find((obj: { anime: any; }) => obj.anime === animeId);
-            animes.push({
-              id: anime.id,
-              title: anime.attributes.anime.data[0].attributes.title,
-              title_english: anime.attributes.anime.data[0].attributes.title_english,
-              episodes: anime.attributes.anime.data[0].attributes.episodes,
-              status: anime.attributes.anime.data[0].attributes.status,
-              synopsis: anime.attributes.anime.data[0].attributes.synopsis,
-              year: anime.attributes.anime.data[0].attributes.year,
-              images: {
-                jpg: {
-                  image_url: anime.attributes.anime.data[0].attributes.image_url,
-                }
-              },
-              genres: animeGenres.genre,
-              favorites: anime.attributes.anime.data[0].attributes.favorites,
-              mal_id: anime.attributes.anime.data[0].attributes.mal_id,
-              episodes_watched: anime.attributes.episodes_watched,
-              watch_status: anime.attributes.watch_status,
-              user_score: anime.attributes.user_score
-            });
-            this._library.next(animes);
-            obs.next(animes)
-          }
+  getLibrary(): Observable<Anime[]> {
+    return this.firebaseAuth.user$.pipe(
+      switchMap(user => {
+        if (!user || !user.uuid) { // Asegúrate de que aquí usas el identificador correcto para el usuario
+          throw new Error('Usuario no autenticado');
         }
+        // Accede directamente a la colección "library" del usuario
+        const libraryPath = `users/${user.uuid}/library`;
+        return from(this.firebaseService.getDocuments(libraryPath));
+      }),
+      map(libraryDocuments => {
+        // Mapea los documentos directamente a objetos Anime
+        let animes = libraryDocuments.map(doc => {
+          const data = doc.data;
+          return {
+            id : data['animeUUID'], // Asegúrate de que el campo se llama así en tu documento
+            title: data['title'],
+            title_english: data['title_english'],
+            episodes: data['episodes'],
+            status: data['status'],
+            genres: data['genres'],
+            images: { jpg: { image_url: data['image_url'] } },
+            episodes_watched: data['episodes_watched'],
+            mal_id: data['mal_id'],
+            watch_status: data['watch_status'],
+            user_score: data['user_score'],
+            year: data['year']
+          };
+        });
+        this._library.next(animes);
+        return animes;
+      }),
+      catchError(error => {
+        console.error('Error al obtener la librería:', error);
+        return of([]);
       })
-
-    })
+    );
   }
+
 
   getAnimeIdFromLibrary(anime: Anime): Observable<number> { // Obtener id del anime de la libreria
     return new Observable<number>(obs => {

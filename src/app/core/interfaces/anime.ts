@@ -4,7 +4,7 @@ export interface Anime {
     title_english: string,
     episodes: number,
     status: string,
-    synopsis: string,
+    synopsis?: string,
     year: number,
     images: {
         jpg: {
@@ -12,7 +12,7 @@ export interface Anime {
         }
     }
     genres: any[],
-    favorites: number,
+    favorites?: number,
     mal_id: number,
     episodes_watched: number,
     watch_status: string,
