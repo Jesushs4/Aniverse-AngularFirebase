@@ -34,27 +34,19 @@ export class GenreSearchComponent implements OnInit, ControlValueAccessor {
   constructor(public apiService: ApiService, public firebaseService: FirebaseService, public firebaseAuth: FirebaseAuthService, private libraryService: LibraryService) { }
 
   async ngOnInit() {
-    // Asumiendo que firebaseService ya tiene un método getLibrary()
-    if (this.firebaseAuth.user$) {
-      const userUid = this.firebaseService.user!.uid;
-      try {
-        const library = this.libraryService.getLibrary(); // Implementa este método en FirebaseService
-        const genreSet = new Set<string>(); // Usamos un Set para evitar géneros duplicados
-        library.forEach(anime => {
-          console.log(anime);
-          anime.forEach(animeGenre => {
-            animeGenre.genres.forEach((genre: { name: string; }) => {
-              genreSet.add(genre.name); // Asume que cada género tiene una propiedad 'name'
-          })
-          });
-        });
-        console.log(genreSet);
-        this.allGenres = Array.from(genreSet).map(name => ({ name }));
-        this.genres = this.allGenres;
-      } catch (error) {
-        console.error('Error al obtener los géneros de la biblioteca:', error);
-      }
-    }
+    const user = this.firebaseService.user
+    
+    let response = await this.firebaseService.getDocuments(`users/${user!.uid}/library`)
+
+    const genreSet = new Set<string>();
+     response.forEach(doc => {
+      doc.data['genres'].forEach((genre: string) => {
+        genreSet.add(genre);
+      });
+    });
+    console.log(genreSet, "generos");
+    this.allGenres = Array.from(genreSet).map(name => ({ name }));
+    this.genres = this.allGenres;
   }
 
   writeValue(obj: any): void {

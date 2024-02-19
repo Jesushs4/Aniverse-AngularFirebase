@@ -58,15 +58,13 @@ export class LibraryService {
       }
       const userUid = this.firebaseService.user.uid;
   
-      // Primero, busca el anime por mal_id en la colección de animes.
       this.firebaseService.getDocumentsBy('animes', 'mal_id', mal_id).then(animeDocuments => {
         if (animeDocuments.length === 0) {
           observer.error('Anime no encontrado');
           return;
         }
-        const animeData = animeDocuments[0].data; // Asumimos que mal_id es único.
+        const animeData = animeDocuments[0].data;
   
-        // Luego, busca en la colección 'library' del usuario por el mismo anime.
         this.firebaseService.getDocumentsBy(`users/${userUid}/library`, 'mal_id', mal_id).then(libraryDocuments => {
           if (libraryDocuments.length === 0) {
             observer.error('Información de la biblioteca no encontrada');
@@ -74,7 +72,6 @@ export class LibraryService {
           }
           const libraryData = libraryDocuments[0].data;
   
-          // Combina la información del anime con la de la biblioteca del usuario.
           const combinedData = {
             title: animeData['title'],
             title_english: animeData['title_english'],
@@ -102,19 +99,17 @@ export class LibraryService {
   getLibrary(): Observable<Anime[]> {
     return this.firebaseAuth.user$.pipe(
       switchMap(user => {
-        if (!user || !user.uuid) { // Asegúrate de que aquí usas el identificador correcto para el usuario
+        if (!user || !user.uuid) { 
           throw new Error('Usuario no autenticado');
         }
-        // Accede directamente a la colección "library" del usuario
         const libraryPath = `users/${user.uuid}/library`;
         return from(this.firebaseService.getDocuments(libraryPath));
       }),
       map(libraryDocuments => {
-        // Mapea los documentos directamente a objetos Anime
         let animes = libraryDocuments.map(doc => {
           const data = doc.data;
           return {
-            id : data['animeUUID'], // Asegúrate de que el campo se llama así en tu documento
+            id : data['animeUUID'], 
             title: data['title'],
             title_english: data['title_english'],
             episodes: data['episodes'],
@@ -158,7 +153,7 @@ export class LibraryService {
 
   deleteAnime(anime: Anime): Observable<Anime> { // Borrar anime de la libreria
     return new Observable<Anime>(obs => {
-      this.auth.me().subscribe({
+      /*this.auth.me().subscribe({
         next: async (user: User) => {
           let response = await lastValueFrom(this.apiService.get(`/libraries?filters[user][id][$eq]=${user.id}&filters[anime][mal_id][$eq]=${anime.mal_id}`));
           let reviewResponse = await lastValueFrom(this.apiService.get(`/reviews?filters[library][id]=${response.data[0].id}`))
@@ -176,31 +171,49 @@ export class LibraryService {
             this.getLibrary().subscribe();
           }
         }
-      })
+      })*/
+      const user = this.firebaseService.user
+      this.firebaseService.getDocumentsBy(`users/${user!.uid}/library`, 'mal_id', anime.mal_id).then(animeDocuments => {
+        let animeUid = animeDocuments[0].id
+        console.log(animeDocuments[0].id);
+
+        this.firebaseService.deleteDocument(`users/${user!.uid}/library`, animeUid)
+
+        this._anime.next(anime); // De esta forma mostramos los nuevos datos sin necesidad de recargar
+        obs.next(anime);
+
+        this.firebaseService.getDocuments(`users/${user!.uid}/library`).then(library => {
+          console.log(library)
+          if (library.length === 0) {
+          this._library.next([]);
+        } else {
+          this.getLibrary().subscribe();
+        }
+        })
+        
+    })
     })
   }
 
   editAnime(anime: Anime, form: any): Observable<Anime> { // Editar anime de la libreria
     return new Observable<Anime>(obs => {
-      this.auth.me().subscribe({
-        next: async (user: User) => {
-          let response = await lastValueFrom(this.apiService.get(`/libraries?filters[user][id][$eq]=${user.id}&filters[anime][mal_id][$eq]=${anime.mal_id}`));
-          let info = {
-            data: {
-              episodes_watched: form.episodes_watched,
-              watch_status: form.watch_status,
-              user_score: form.user_score
-            }
-          }
-          let newAnime = await lastValueFrom(this.apiService.put(`/libraries/${response.data[0].id}`, info));
-          anime.episodes_watched = newAnime.data.attributes.episodes_watched;
-          anime.watch_status = newAnime.data.attributes.watch_status;
-          anime.user_score = newAnime.data.attributes.user_score;
-          this._anime.next(anime); // De esta forma mostramos los nuevos datos sin necesidad de recargar
-          obs.next(anime);
+      const user = this.firebaseService.user
+      this.firebaseService.getDocumentsBy(`users/${user!.uid}/library`, 'mal_id', anime.mal_id).then(animeDocuments => {
+        let animeUid = animeDocuments[0].id
+        console.log(animeDocuments[0].id);
+        let info = {
+          episodes_watched: form.episodes_watched,
+          watch_status: form.watch_status,
+          user_score: form.user_score
         }
-      })
+        this.firebaseService.updateDocument(`users/${user!.uid}/library`, animeUid, info)
+        anime.episodes_watched = form.episodes_watched;
+        anime.watch_status = form.watch_status;
+        anime.user_score = form.user_score;
+        this._anime.next(anime); // De esta forma mostramos los nuevos datos sin necesidad de recargar
+        obs.next(anime);
     })
+  })
   }
 
 }
