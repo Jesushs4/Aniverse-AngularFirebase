@@ -112,19 +112,17 @@ export class AnimeService {
 
 
   public addAnimeUser(anime: any, form: any): Observable<any> {
-    // Primero, se crea o encuentra el anime y se obtiene su UUID
     console.log(anime);
     return this.createAnime(anime).pipe(
       switchMap(animeUUID => {
-        // Una vez que tienes el UUID, obtienes el usuario autenticado
-        return this.firebaseAuth.user$.pipe( // Asumiendo que tienes un observable `user$`
+        return this.firebaseAuth.user$.pipe(
           switchMap(user => {
             if (!user) {
               throw new Error('Usuario no autenticado');
             }
-            const userId = user.uuid; // Asumiendo que el objeto user tiene una propiedad uid
-            const libraryPath = `users/${userId}/library`;
-            const relation = {
+            let userId = user.uuid;
+            let libraryPath = `users/${userId}/library`;
+            let relation = {
               animeUUID: animeUUID, // Usamos el UUID del anime para la relación
               title: anime.title,
               title_english: anime.title_english,
@@ -145,15 +143,14 @@ export class AnimeService {
                 if (existingRelations.length === 0) {
                   // Si no existe, crea la relación
                   return this.firebaseService.createDocument(libraryPath, relation).then(docId => {
-                    return of({ ...relation, id: docId }); // Devuelve la relación creada con su ID
+                    return of({ ...relation, id: docId });
                   });
                 } else {
                   // Si la relación ya existe, devuelve la existente
-                  return of(existingRelations[0]); // Asumiendo que quieres la primera relación existente
+                  return of(existingRelations[0]);
                 }
               }),
               catchError(error => {
-                // Manejo de errores, por ejemplo, permisos insuficientes
                 return of(`Error al crear o verificar la relación anime-usuario: ${error.message}`);
               })
             );
