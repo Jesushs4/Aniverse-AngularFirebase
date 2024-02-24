@@ -83,6 +83,7 @@ export class FirebaseAuthService extends AuthService{
       return from(this.firebaseSvc.createDocumentWithId('users',{
     name:info.username,
     nickname:info.nickname,
+    library: []
     }, info.uuid))
     throw new Error('Error inesperado');
   }

@@ -1,5 +1,5 @@
 export interface Anime {
-    id: number,
+    id: string,
     title: string,
     title_english: string,
     episodes: number,

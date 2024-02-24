@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Anime } from '../interfaces/anime';
 import { Observable, catchError, finalize, from, lastValueFrom, map, mergeMap, of, switchMap, tap, throwError } from 'rxjs';
-import { ApiService } from './strapi/api.service';
-import { AuthService } from './auth.service';
 import { FirebaseAuthService } from './firebase/firebase-auth.service';
 import { FirebaseService } from './firebase.service';
 
@@ -12,8 +10,6 @@ import { FirebaseService } from './firebase.service';
 export class AnimeService {
 
   constructor(
-    private apiService: ApiService,
-    private auth: AuthService,
     private firebaseAuth: FirebaseAuthService,
     private firebaseService: FirebaseService
   ) { }
@@ -23,13 +19,11 @@ export class AnimeService {
       this.firebaseService.getDocumentsBy('animes', 'mal_id', anime.mal_id)
         .then(existingAnimes => {
           if (existingAnimes.length > 0) {
-            // Anime encontrado, devuelve el ID de Firebase existente
-            const existingAnime = existingAnimes[0];
-            observer.next(existingAnime.id); // Usa el ID proporcionado por Firebase
+            let existingAnime = existingAnimes[0];
+            observer.next(existingAnime.id);
             observer.complete();
           } else {
-            // Anime no encontrado, crea uno nuevo con atributos específicos
-            const animeToCreate = {
+            let animeToCreate = {
               title: anime.title,
               title_english: anime.title_english,
               episodes: anime.episodes,
@@ -38,78 +32,19 @@ export class AnimeService {
               year: anime.year,
               image_url: anime.images.jpg.image_url,
               mal_id: anime.mal_id,
-              genres: anime.genres.map((genre: { name: any; }) => genre.name) // Asumiendo que genres es un array de objetos
+              genres: anime.genres.map((genre: { name: any; }) => genre.name)
             };
   
             this.firebaseService.createDocument('animes', animeToCreate)
               .then(docRefId => {
-                // Ahora usa el ID del documento recién creado, proporcionado por Firebase
-                observer.next(docRefId); // Devuelve el ID de Firebase del nuevo documento
+                observer.next(docRefId);
                 observer.complete();
               })
-              .catch(error => {
-                if (error.code === 'permission-denied' || error.code === 'resource-exhausted') {
-                  observer.error(new Error('No se pudo crear el anime debido a restricciones de seguridad o límites de cuota.'));
-                } else {
-                  observer.error(error);
-                }
-              });
           }
         })
-        .catch(error => observer.error(error));
-    }).pipe(
-      catchError(error => {
-        return of(`Error al buscar o crear el anime: ${error.message}`);
-      }),
-    );
-  }
 
-  /*private createGenre(anime: Anime): Observable<any> { // Crea genero
-    let genres: number[] = [];
-    return this.apiService.get('/genres').pipe(
-      switchMap(existingGenresResponse => {
-        let existingGenres = existingGenresResponse.data.map((genre:
-          {
-            id: number; attributes:
-            { name: string; };
-          }) => {
-          return {
-            id: genre.id,
-            name: genre.attributes.name
-          };
-        });
-        anime.genres.forEach(genre => { // Tras obtener los generos que ya tengo, solo hago post si hay alguno que no tengo
-          let foundGenre = existingGenres.find((g: { name: any; }) => g.name === genre.name);
-          if (!foundGenre) {
-            let newGenre = { data: { name: genre.name } };
-            this.apiService.post('/genres', newGenre).subscribe(response =>
-              genres.push(response.data.id));
-          } else {
-            genres.push(foundGenre.id);
-          }
-        });
-        return of(null)
-      }),
-      finalize(() => {
-        this.relationGenre(anime, genres).subscribe(); // Cuando finalice, ejecuto la relacion de géneros de forma que le paso el anime y los géneros que he ido guardando
-      })
-    )
-  }
-
-  private relationGenre(anime: Anime, genres: number[]): Observable<any> {
-    return new Observable(obs => {
-      this.apiService.get(`/animes?filters[mal_id]=${anime.mal_id}`).subscribe(async anime => {
-        let post = {
-          data: {
-            anime: anime.data[0].id,
-            genre: genres.map(id => ({ id: id }))
-          }
-        };
-        await lastValueFrom(this.apiService.post(`/animegenres`, post))
-      })
     })
-  }*/
-
+  }
 
   public addAnimeUser(anime: any, form: any): Observable<any> {
     console.log(anime);
@@ -149,9 +84,6 @@ export class AnimeService {
                   // Si la relación ya existe, devuelve la existente
                   return of(existingRelations[0]);
                 }
-              }),
-              catchError(error => {
-                return of(`Error al crear o verificar la relación anime-usuario: ${error.message}`);
               })
             );
           })

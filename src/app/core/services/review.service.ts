@@ -7,6 +7,7 @@ import { ApiService } from './strapi/api.service';
 import { Anime } from '../interfaces/anime';
 import { ToastController, ToastOptions } from '@ionic/angular';
 import { CustomTranslateService } from './custom-translate.service';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +22,14 @@ export class ReviewService {
     private libraryService: LibraryService,
     private apiService: ApiService,
     private toast: ToastController,
-    private translate: CustomTranslateService
+    private translate: CustomTranslateService,
+    private firebaseService: FirebaseService
   ) { }
 
-  createReview(form: any): Observable<CreateReview> { // Crear reseñas
-    return new Observable<CreateReview>(obs => {
-      this.libraryService.getAnimeIdFromLibrary(this.libraryService.anime!).subscribe({
+  createReview(form: any): Observable<any> { // Crear reseñas
+    console.log(this.libraryService.anime, "ANIME");
+    return new Observable<any>(obs => {
+      /*this.libraryService.getAnimeIdFromLibrary(this.libraryService.anime!).subscribe({
         next: async (libraryId: number) => {
           let check = await lastValueFrom(this.apiService.get(`/reviews?filters[library][id][$eq]=${libraryId}`))
           if (check.data.length < 1) { // Comprobar que no haya ninguna creada por ese usuario
@@ -54,13 +57,56 @@ export class ReviewService {
             })
           }
         }
-      })
+      })*/
+          console.log(this.firebaseService.getDocuments(`users`), "USUARIOS");
+          console.log(this.firebaseService.user, "USUARIO LOGUEADO");
+          let review: any = {
+              summary: form.summary,
+              review: form.review,
+              userId: this.firebaseService.user!.uid
+          }
+
+          /*this.firebaseService.createDocument(`animes/${this.libraryService!.anime!.id}/reviews`, review)
+          .then(docRefId => {
+            obs.next(docRefId);
+            obs.complete();
+          })*/
+        
+
+      /*this.firebaseService.getDocumentsBy('animes', 'mal_id', anime.mal_id)
+        .then(existingReview => {
+          if (existingAnimes.length > 0) {
+            let existingAnime = existingAnimes[0];
+            observer.next(existingAnime.id);
+            observer.complete();
+          } else {
+            let animeToCreate = {
+              title: anime.title,
+              title_english: anime.title_english,
+              episodes: anime.episodes,
+              status: anime.status,
+              synopsis: anime.synopsis,
+              year: anime.year,
+              image_url: anime.images.jpg.image_url,
+              mal_id: anime.mal_id,
+              genres: anime.genres.map((genre: { name: any; }) => genre.name)
+            };
+  
+            this.firebaseService.createDocument('animes', animeToCreate)
+              .then(docRefId => {
+                observer.next(docRefId);
+                observer.complete();
+              })
+          }
+        })*/
     })
   }
 
   getReviews(): Observable<Review[]> { // Mostrar reseñas
     return new Observable<Review[]>(obs => {
-      this.libraryService.getAnimeFromLibrary(this.libraryService.anime!).subscribe({
+      let reviews: Review[] = [];
+
+      /*this.libraryService.getAnimeFromLibrary(this.libraryService.anime!).subscribe({
         next: async (libraryId: Anime) => {
           let libraryResponse = await lastValueFrom(this.apiService.get(`/reviews?filters[library][anime][mal_id][$eq]=${libraryId.mal_id}&populate=library`));
           let reviews: Review[] = [];
@@ -87,7 +133,7 @@ export class ReviewService {
           obs.next(reviews);
           obs.complete();
         }
-      })
+      })*/
     })
   }
 
