@@ -47,43 +47,44 @@ export class AnimeService {
   }
 
   public addAnimeUser(anime: any, form: any): Observable<any> {
-    console.log(anime);
     return this.createAnime(anime).pipe(
       switchMap(animeUUID => {
         return this.firebaseAuth.user$.pipe(
           switchMap(user => {
             if (!user) {
-              throw new Error('Usuario no autenticado');
+              return throwError('Usuario no autenticado');
             }
-            let userId = user.uuid;
-            let libraryPath = `users/${userId}/library`;
-            let relation = {
-              animeUUID: animeUUID, // Usamos el UUID del anime para la relación
-              title: anime.title,
-              title_english: anime.title_english,
-              episodes: anime.episodes,
-              status: anime.status,
-              year: anime.year,
-              mal_id: anime.mal_id,
-              genres: anime.genres.map((genre: { name: any; }) => genre.name),
-              image_url: anime.images.jpg.image_url,
-              episodes_watched: form.episodes_watched,
-              watch_status: form.watch_status,
-              user_score: form.user_score
-            };
-            
-            // Verificar si la relación anime-usuario ya existe usando el UUID
-            return from(this.firebaseService.getDocumentsBy(libraryPath, 'animeUUID', animeUUID)).pipe(
-              switchMap(existingRelations => {
-                if (existingRelations.length === 0) {
-                  // Si no existe, crea la relación
-                  return this.firebaseService.createDocument(libraryPath, relation).then(docId => {
-                    return of({ ...relation, id: docId });
-                  });
-                } else {
-                  // Si la relación ya existe, devuelve la existente
-                  return of(existingRelations[0]);
+            const userId = user.uuid;
+            const libraryPath = `users/${userId}`;
+  
+            return from(this.firebaseService.getDocument('users', userId!)).pipe(
+              switchMap(userDoc => {
+                let library = userDoc.data['library'] || [];
+                const existingAnimeIndex = library.findIndex((item: any) => item.animeUUID === animeUUID);
+                if (existingAnimeIndex !== -1) {
+                  return throwError('El anime ya está en la biblioteca');
                 }
+  
+                const relation = {
+                  animeUUID: animeUUID,
+                  title: anime.title,
+                  title_english: anime.title_english,
+                  episodes: anime.episodes,
+                  status: anime.status,
+                  year: anime.year,
+                  mal_id: anime.mal_id,
+                  genres: anime.genres.map((genre: { name: any; }) => genre.name),
+                  image_url: anime.images.jpg.image_url,
+                  episodes_watched: form.episodes_watched,
+                  watch_status: form.watch_status,
+                  user_score: form.user_score
+                };
+                library.push(relation);
+  
+                return from(this.firebaseService.updateDocument('users', userId!, { library: library })).pipe(
+                  map(() => relation),
+                  catchError(error => throwError('Error al actualizar la biblioteca del usuario'))
+                );
               })
             );
           })

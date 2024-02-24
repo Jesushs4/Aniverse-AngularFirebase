@@ -13,7 +13,6 @@ import { CustomTranslateService } from 'src/app/core/services/custom-translate.s
 })
 export class AnimeCardComponent implements OnInit {
   @Input() anime: Anime | null = null;
-
   constructor(
     private modal: ModalController,
     private router: Router,
@@ -26,7 +25,7 @@ export class AnimeCardComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    console.log(this.anime)
   }
 
 
@@ -57,17 +56,20 @@ export class AnimeCardComponent implements OnInit {
         case 'submit': {
           if (this.anime) {
             this.libraryService.addAnime(this.anime, info.data).subscribe(async anime => {
-              this.translate.get('toast.addAnime').subscribe(async (translatedMessage: string) => {
+              if (anime) {
+                console.log(anime, "QUE ES ESTO");
+                this.translate.get('toast.addAnime').subscribe(async (translatedMessage: string) => {
 
-                const options: ToastOptions = {
-                  message: translatedMessage,
-                  duration: 1000,
-                  position: 'bottom',
-                  color: 'tertiary',
-                };
-                const toast = await this.toast.create(options);
-                toast.present();
-              })
+                  const options: ToastOptions = {
+                    message: translatedMessage,
+                    duration: 1000,
+                    position: 'bottom',
+                    color: 'tertiary',
+                  };
+                  const toast = await this.toast.create(options);
+                  toast.present();
+                })
+              }
             });
           }
         }

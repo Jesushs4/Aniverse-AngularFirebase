@@ -11,6 +11,7 @@ export interface Anime {
             image_url: string
         }
     }
+    image_url?: string,
     genres: any[],
     favorites?: number,
     mal_id: number,

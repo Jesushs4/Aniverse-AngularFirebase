@@ -58,37 +58,42 @@ export class LibraryService {
       }
       let userUid = this.firebaseService.user.uid;
   
-      this.firebaseService.getDocumentsBy('animes', 'mal_id', mal_id).then(animeDocuments => {
-        if (animeDocuments.length === 0) {
-          observer.error('Anime no encontrado');
+      // Obtener el documento del usuario que contiene la biblioteca en un array
+      this.firebaseService.getDocument('users', userUid).then(userDocument => {
+        const userDocData = userDocument.data;
+        const library = userDocData['library'] || [];
+        const libraryItem = library.find((item: any) => item.mal_id === mal_id);
+  
+        if (!libraryItem) {
+          observer.error('Anime no encontrado en la biblioteca');
           return;
         }
-        let animeData = animeDocuments[0].data;
   
-        this.firebaseService.getDocumentsBy(`users/${userUid}/library`, 'mal_id', mal_id).then(libraryDocuments => {
-          if (libraryDocuments.length === 0) {
-            observer.error('Información de la biblioteca no encontrada');
+        // Asumiendo que necesitas complementar la información del anime desde la colección 'animes'
+        this.firebaseService.getDocumentsBy('animes', 'mal_id', mal_id).then(animeDocuments => {
+          if (animeDocuments.length === 0) {
+            observer.error('Anime no encontrado');
             return;
           }
-          let libraryData = libraryDocuments[0].data;  
+          let animeData = animeDocuments[0].data;
+  
           let combinedData = {
-            id: libraryData['animeUUID'],
+            id: libraryItem.animeUUID || animeData['id'], // Asegúrate de ajustar según tus identificadores
             title: animeData['title'],
             title_english: animeData['title_english'],
             episodes: animeData['episodes'],
             status: animeData['status'],
             synopsis: animeData['synopsis'],
             year: animeData['year'],
-            images: { jpg: { image_url: animeData['image_url'] } },
+            images: { jpg: { image_url: libraryItem.image_url || animeData['image_url'] } }, // Ajusta según tus datos
             genres: animeData['genres'],
             mal_id: animeData['mal_id'],
-            episodes_watched: libraryData['episodes_watched'],
-            watch_status: libraryData['watch_status'],
-            user_score: libraryData['user_score'],
+            episodes_watched: libraryItem.episodes_watched,
+            watch_status: libraryItem.watch_status,
+            user_score: libraryItem.user_score,
           };
           observer.next(combinedData);
           observer.complete();
-  
         }).catch(error => observer.error(error));
       }).catch(error => observer.error(error));
     });
@@ -100,29 +105,13 @@ export class LibraryService {
         if (!user || !user.uuid) { 
           throw new Error('Usuario no autenticado');
         }
-        let libraryPath = `users/${user.uuid}/library`;
-        return from(this.firebaseService.getDocuments(libraryPath));
+        return from(this.firebaseService.getDocument('users', user.uuid));
       }),
-      map(libraryDocuments => {
-        let animes = libraryDocuments.map(doc => {
-          let data = doc.data;
-          return {
-            id : data['animeUUID'], 
-            title: data['title'],
-            title_english: data['title_english'],
-            episodes: data['episodes'],
-            status: data['status'],
-            genres: data['genres'],
-            images: { jpg: { image_url: data['image_url'] } },
-            episodes_watched: data['episodes_watched'],
-            mal_id: data['mal_id'],
-            watch_status: data['watch_status'],
-            user_score: data['user_score'],
-            year: data['year']
-          };
-        });
-        this._library.next(animes);
-        return animes;
+      map(userDocument => {
+        const library = userDocument.data['library'] as Anime[]; // Asume que tienes el campo library correctamente tipado en tu documento.
+        console.log(library);
+        this._library.next(library);
+        return library;
       }),
       catchError(error => {
         console.error('Error al obtener la librería:', error);
@@ -149,6 +138,80 @@ export class LibraryService {
     })
   }
 
+  deleteAnime(anime: Anime): Observable<Anime> {
+    return new Observable<Anime>(observer => {
+      if (!this.firebaseService.user) {
+        observer.error('Usuario no autenticado');
+        return;
+      }
+      const userUid = this.firebaseService.user.uid;
+      this.firebaseService.getDocument('users', userUid).then(userDocument => {
+        const userData = userDocument.data;
+        const library: Anime[] = userData['library'] || [];
+        // Determina si el anime a eliminar es el único en la biblioteca
+        const isLastAnime = library.length === 1 && library.some(item => item.mal_id === anime.mal_id);
+        const updatedLibrary = library.filter(item => item.mal_id !== anime.mal_id);
+  
+        this.firebaseService.updateDocument('users', userUid, { library: updatedLibrary })
+          .then(() => {
+            this._anime.next(null); // Actualiza el BehaviorSubject para el anime individual
+  
+            // Aquí se verifica si se debe limpiar la biblioteca o recargarla
+            if (isLastAnime) {
+              this._library.next([]); // Si es el último anime, limpia la biblioteca
+            } else {
+              this.getLibrary().subscribe(); // Si no, recarga la biblioteca
+            }
+  
+            observer.next(anime);
+            observer.complete();
+          })
+          .catch(error => observer.error(error));
+      })
+      .catch(error => observer.error(error));
+    });
+  }
+
+  editAnime(anime: Anime, form: any): Observable<Anime> {
+    return new Observable<Anime>(observer => {
+      if (!this.firebaseService.user) {
+        observer.error('Usuario no autenticado');
+        return;
+      }
+      const userUid = this.firebaseService.user.uid;
+      this.firebaseService.getDocument('users', userUid).then(userDocument => {
+        const userData = userDocument.data;
+        const library: Anime[] = userData['library'] || [];
+        const animeIndex = library.findIndex(item => item.mal_id === anime.mal_id);
+  
+        if (animeIndex !== -1) {
+          // Actualizar los datos del anime
+          library[animeIndex] = {
+            ...library[animeIndex],
+            episodes_watched: form.episodes_watched,
+            watch_status: form.watch_status,
+            user_score: form.user_score,
+          };
+  
+          this.firebaseService.updateDocument('users', userUid, { library })
+            .then(() => {
+              anime.episodes_watched = form.episodes_watched;
+              anime.watch_status = form.watch_status;
+              anime.user_score = form.user_score;
+              this._anime.next(anime);
+              observer.next(anime);
+            })
+            .catch(error => observer.error(error));
+        } else {
+          observer.error('Anime no encontrado en la biblioteca');
+        }
+      })
+      .catch(error => observer.error(error));
+    });
+  }
+
+  /* 
+User
   deleteAnime(anime: Anime): Observable<Anime> { // Borrar anime de la libreria
     return new Observable<Anime>(obs => {
       let user = this.firebaseService.user
@@ -172,27 +235,6 @@ export class LibraryService {
         
     })
     })
-  }
-
-  editAnime(anime: Anime, form: any): Observable<Anime> { // Editar anime de la libreria
-    return new Observable<Anime>(obs => {
-      let user = this.firebaseService.user
-      this.firebaseService.getDocumentsBy(`users/${user!.uid}/library`, 'mal_id', anime.mal_id).then(animeDocuments => {
-        let animeUid = animeDocuments[0].id
-        console.log(animeDocuments[0].id);
-        let info = {
-          episodes_watched: form.episodes_watched,
-          watch_status: form.watch_status,
-          user_score: form.user_score
-        }
-        this.firebaseService.updateDocument(`users/${user!.uid}/library`, animeUid, info)
-        anime.episodes_watched = form.episodes_watched;
-        anime.watch_status = form.watch_status;
-        anime.user_score = form.user_score;
-        this._anime.next(anime); // De esta forma mostramos los nuevos datos sin necesidad de recargar
-        obs.next(anime);
-    })
-  })
-  }
+  }*/
 
 }
