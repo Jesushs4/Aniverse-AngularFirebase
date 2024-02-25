@@ -36,15 +36,17 @@ export class GenreSearchComponent implements OnInit, ControlValueAccessor {
   async ngOnInit() {
     const user = this.firebaseService.user
     
-    let response = await this.firebaseService.getDocuments(`users/${user!.uid}/library`)
-
-    const genreSet = new Set<string>();
-     response.forEach(doc => {
-      doc.data['genres'].forEach((genre: string) => {
-        genreSet.add(genre);
-      });
+    let userDoc = await this.firebaseService.getDocument('users', user!.uid);
+    let library = userDoc.data['library'] || [];
+  
+    let genreSet = new Set<string>();
+    library.forEach((anime: any) => {
+      if (anime.genres) {
+        anime.genres.forEach((genre: string) => {
+          genreSet.add(genre);
+        });
+      }
     });
-    console.log(genreSet, "generos");
     this.allGenres = Array.from(genreSet).map(name => ({ name }));
     this.genres = this.allGenres;
   }

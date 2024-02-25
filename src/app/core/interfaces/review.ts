@@ -4,9 +4,10 @@ export interface Review {
     review: string,
     date_added: string,
     user_score: number,
-    user_id: number,
+    user_id: string,
     nickname: string
-    own_review: boolean
+    own_review: boolean,
+    animeId?: string
 }
 
 export interface CreateReview {
