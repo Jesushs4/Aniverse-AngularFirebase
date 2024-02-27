@@ -47,7 +47,7 @@ export class FirebaseService {
     this._db = getFirestore(this._app);
     this._webStorage = getStorage(this._app);
     this._auth = initializeAuth(getApp(), { persistence: indexedDBLocalPersistence });          
-    this._auth.onAuthStateChanged(async user=>{
+    this._auth.onAuthStateChanged(async user=>{ 
       this._user = user;
       if(user){
         if(user.uid && user.email){
@@ -211,9 +211,11 @@ export class FirebaseService {
   }
 
   public subscribeToCollection(collectionName:string, subject: BehaviorSubject<any[]>, mapFunction:(el:DocumentData)=>any):Unsubscribe | null{
+    console.log(this._db, "DATABASEEEEEE");
     if(!this._db)
         return null;
     return onSnapshot(collection(this._db, collectionName), (snapshot) => {
+      //console.log("ACTIVA");
       subject.next(snapshot.docs.map<any>(doc=>mapFunction(doc)));
       }, error=>{});
   }

@@ -38,7 +38,7 @@ export class AnimePage implements OnInit {
         this.anime.setAnime(animeData).subscribe(response => {
           this.animeLoaded = true;
         });
-        this.reviewService.getReviews().subscribe();
+        //this.reviewService.getReviews().subscribe();
       });
     });
   }
@@ -151,7 +151,6 @@ export class AnimePage implements OnInit {
           toast.present();
         })
       })
-      this.reviewService.getReviews().subscribe();
     }
 
     this.presentReview(null, onDismiss);

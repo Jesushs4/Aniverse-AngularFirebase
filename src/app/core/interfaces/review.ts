@@ -7,7 +7,8 @@ export interface Review {
     user_id: string,
     nickname: string
     own_review: boolean,
-    animeId?: string
+    animeId?: string,
+    userId?: string
 }
 
 export interface CreateReview {
