@@ -29,6 +29,7 @@
                 >{{'anime.synopsis' | translate}}</ion-title
               >
               <p appExpandable>{{ anime.anime?.synopsis }}</p>
+              <ion-button *ngIf="isCapacitor" (click)="textToSpeech()">ESCUCHAR</ion-button>
             </div>
             <div class="anime-info">
               <ion-text

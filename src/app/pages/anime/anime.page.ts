@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
+import { Capacitor } from '@capacitor/core';
 import { ModalController, ToastController, ToastOptions } from '@ionic/angular';
 import { Anime } from 'src/app/core/interfaces/anime';
 import { Review } from 'src/app/core/interfaces/review';
@@ -18,6 +20,7 @@ export class AnimePage implements OnInit {
 
   public reviewCreated: boolean | undefined
   public animeLoaded = false;
+  public isCapacitor: boolean;
 
   constructor(
     private router: Router,
@@ -28,7 +31,7 @@ export class AnimePage implements OnInit {
     private toast: ToastController,
     private translate: CustomTranslateService
   ) {
-
+    this.isCapacitor = Capacitor.isNative!;
   }
 
   ngOnInit() {
@@ -41,6 +44,21 @@ export class AnimePage implements OnInit {
         //this.reviewService.getReviews().subscribe();
       });
     });
+  }
+
+  textToSpeech() {
+    const speak = async () => {
+      await TextToSpeech.speak({
+        text: this.anime.anime!.synopsis!,
+        lang: 'en-US',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+        category: 'ambient',
+      });
+    };
+
+    speak();
   }
 
   scrollToReviews() {
