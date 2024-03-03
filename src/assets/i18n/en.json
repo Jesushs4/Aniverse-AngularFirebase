@@ -73,6 +73,7 @@
         "editReview": "Review has been edited",
         "editAnime": "Anime has been edited",
         "addAnime": "Anime added to library",
+        "addAnimeError": "Anime is already in library",
         "deleteAnime": "Anime has been deleted",
         "deleteReview": "Review has been deleted",
         "userCreated": "Se ha creado el usuario",

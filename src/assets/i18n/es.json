@@ -73,6 +73,7 @@
         "editReview": "Se ha editado la reseña",
         "editAnime": "Se ha editado el anime",
         "addAnime": "Se ha añadido a la biblioteca",
+        "addAnimeError": "El anime ya se encuentra en la biblioteca",
         "deleteAnime": "Se ha borrado el anime",
         "deleteReview": "Se ha borrado la reseña",
         "userCreated": "Se ha creado el usuario",

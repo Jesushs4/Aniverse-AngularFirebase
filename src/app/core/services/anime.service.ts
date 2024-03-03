@@ -3,6 +3,8 @@ import { Anime } from '../interfaces/anime';
 import { Observable, catchError, finalize, from, lastValueFrom, map, mergeMap, of, switchMap, tap, throwError } from 'rxjs';
 import { FirebaseAuthService } from './firebase/firebase-auth.service';
 import { FirebaseService } from './firebase.service';
+import { ToastController, ToastOptions } from '@ionic/angular';
+import { CustomTranslateService } from './custom-translate.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,9 @@ export class AnimeService {
 
   constructor(
     private firebaseAuth: FirebaseAuthService,
-    private firebaseService: FirebaseService
+    private firebaseService: FirebaseService,
+    private toast: ToastController,
+    private translate: CustomTranslateService,
   ) { }
 
   private createAnime(anime: any): Observable<any> {
@@ -34,7 +38,7 @@ export class AnimeService {
               mal_id: anime.mal_id,
               genres: anime.genres.map((genre: { name: any; }) => genre.name)
             };
-  
+
             this.firebaseService.createDocument('animes', animeToCreate)
               .then(docRefId => {
                 observer.next(docRefId);
@@ -55,16 +59,25 @@ export class AnimeService {
               return throwError('Usuario no autenticado');
             }
             const userId = user.uuid;
-            const libraryPath = `users/${userId}`;
-  
+
             return from(this.firebaseService.getDocument('users', userId!)).pipe(
               switchMap(userDoc => {
                 let library = userDoc.data['library'] || [];
                 const existingAnimeIndex = library.findIndex((item: any) => item.animeUUID === animeUUID);
                 if (existingAnimeIndex !== -1) {
+                  this.translate.get('toast.addAnimeError').subscribe(async (translatedMessage: string) => {
+                    const options: ToastOptions = {
+                      message: translatedMessage,
+                      duration: 1000,
+                      position: 'bottom',
+                      color: 'tertiary',
+                    };
+                    const toast = await this.toast.create(options);
+                    toast.present();
+                  })
                   return throwError('El anime ya está en la biblioteca');
                 }
-  
+
                 const relation = {
                   animeUUID: animeUUID,
                   title: anime.title,
@@ -80,11 +93,19 @@ export class AnimeService {
                   user_score: form.user_score
                 };
                 library.push(relation);
-  
+                this.translate.get('toast.addAnime').subscribe(async (translatedMessage: string) => {
+                  const options: ToastOptions = {
+                    message: translatedMessage,
+                    duration: 1000,
+                    position: 'bottom',
+                    color: 'tertiary',
+                  };
+                  const toast = await this.toast.create(options);
+                  toast.present();
+                })
                 return from(this.firebaseService.updateDocument('users', userId!, { library: library })).pipe(
-                  map(() => relation),
-                  catchError(error => throwError('Error al actualizar la biblioteca del usuario'))
-                );
+                  map(() => relation)                
+                  );
               })
             );
           })

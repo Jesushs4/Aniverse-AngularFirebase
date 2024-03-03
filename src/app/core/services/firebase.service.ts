@@ -136,7 +136,6 @@ export class FirebaseService {
           msg: 'Database is not connected',
         });
       }
-      console.log("DATOS",data);
       const docRef = doc(this._db!, collectionName, docId);
       setDoc(docRef, data)
         .then(() => resolve())
@@ -211,11 +210,9 @@ export class FirebaseService {
   }
 
   public subscribeToCollection(collectionName:string, subject: BehaviorSubject<any[]>, mapFunction:(el:DocumentData)=>any):Unsubscribe | null{
-    console.log(this._db, "DATABASEEEEEE");
     if(!this._db)
         return null;
     return onSnapshot(collection(this._db, collectionName), (snapshot) => {
-      //console.log("ACTIVA");
       subject.next(snapshot.docs.map<any>(doc=>mapFunction(doc)));
       }, error=>{});
   }

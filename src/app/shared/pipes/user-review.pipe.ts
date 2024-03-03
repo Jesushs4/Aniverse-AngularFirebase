@@ -14,10 +14,9 @@ export class UserReviewPipe implements PipeTransform {
     if (!reviews || reviews.length === 0) { // Si no hay reviews no hace nada
       return reviews;
     }
-
     let user = this.firebaseService.user
 
-        let userReviewIndex = reviews.findIndex(r => r.user_id === user?.uid);
+        let userReviewIndex = reviews.findIndex(r => r.userId === user?.uid);
 
         if (userReviewIndex > -1) { // Si se encuentra la review del usuario, se pone la primera
           let [userReview] = reviews.splice(userReviewIndex, 1);

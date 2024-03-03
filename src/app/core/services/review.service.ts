@@ -18,30 +18,26 @@ export class ReviewService {
   reviews$: Observable<Review[]> = this._reviews.asObservable();
 
   constructor(
-    private auth: AuthService,
     private libraryService: LibraryService,
-    private apiService: ApiService,
     private toast: ToastController,
     private translate: CustomTranslateService,
     private firebaseService: FirebaseService
-  ) { 
+  ) {
+    // Cuando se tenga la id del anime, se hara el subscribeToCollection para evitar errores
     this.libraryService.anime$.pipe(
       filter((anime): anime is Anime => !!anime && !!anime.id),
       switchMap(anime => {
-        console.log(anime);
         return this.subscribeToReviews(anime.id);
       })
     ).subscribe();
   }
 
   async subscribeToReviews(animeId: string): Promise<Observable<any>> {
-    const reviewsPath = `animes/${animeId}/reviews`;
-    
-    let usersSnapshot = await this.firebaseService.getDocuments('users');
-  
+    let allUsers = await this.firebaseService.getDocuments('users');
+
     let currentUserUid = this.firebaseService.user?.uid;
-  
-    this.firebaseService.subscribeToCollection(reviewsPath, this._reviews, (doc) => {
+
+    this.firebaseService.subscribeToCollection(`animes/${animeId}/reviews`, this._reviews, (doc) => {
       let reviewData = doc['data']();
       reviewData.id = doc['id'];
       let userId = reviewData.userId;
@@ -49,18 +45,16 @@ export class ReviewService {
       reviewData.own_review = currentUserUid === userId;
       reviewData.animeId = animeId;
 
-        
-        let userDoc = usersSnapshot.find(doc => doc.id === userId);
-        reviewData.nickname = userDoc!.data['nickname']
-        let userLibrary = userDoc!.data['library'];
-        let animeLibraryItem = userLibrary.find((item: { animeUUID: string; }) => item.animeUUID === animeId);
-        
-        reviewData.user_score = animeLibraryItem ? animeLibraryItem.user_score : null;
-      
+      let userDoc = allUsers.find(doc => doc.id === userId);
+      reviewData.nickname = userDoc!.data['nickname']
+      let userLibrary = userDoc!.data['library'];
+      let animeLibraryItem = userLibrary.find((item: { animeUUID: string; }) => item.animeUUID === animeId);
+
+      reviewData.user_score = animeLibraryItem ? animeLibraryItem.user_score : null;
 
       return reviewData;
     });
-  
+
     return this._reviews.asObservable();
   }
 
@@ -89,63 +83,17 @@ export class ReviewService {
             review: form.review,
             userId: this.firebaseService.user!.uid,
             date_added: new Date().toISOString().split('T')[0]
-        }
+          }
 
-        this.firebaseService.createDocument(`animes/${this.libraryService!.anime!.id}/reviews`, review)
-        .then(docRefId => {
-          obs.next(docRefId);
-          obs.complete();
-        })
+          this.firebaseService.createDocument(`animes/${this.libraryService!.anime!.id}/reviews`, review)
+            .then(docRefId => {
+              obs.next(docRefId);
+              obs.complete();
+            })
         }
-        })
+      })
     })
   }
-
-  /*getReviews(): Observable<Review[]> {
-    return new Observable<Review[]>(observer => {
-      let reviews: Review[] = [];
-      let animeUID = this.libraryService.anime!.id;
-  
-      let reviewsPath = `animes/${animeUID}/reviews`;
-  
-      this.firebaseService.getDocuments(reviewsPath).then(async reviewDocuments => {
-        let users = reviewDocuments.map(reviewDoc => {
-          let reviewData = reviewDoc.data;
-
-          return this.firebaseService.getDocument('users', reviewData['userId']).then(userDoc => {
-            let userData = userDoc.data;
-            let libraryItem = userData['library'].find((item: { animeUUID: string; }) => item.animeUUID === animeUID);
-            return {
-              nickname: userData['nickname'],
-              userScore: libraryItem ? libraryItem.user_score : undefined
-            };
-          });
-        });
-        
-        let usersInfo = await Promise.all(users);
-  
-        reviewDocuments.forEach((reviewDoc, index) => {
-          let reviewData = reviewDoc.data;
-          reviews.push({
-            id: reviewDoc.id,
-            summary: reviewData['summary'],
-            review: reviewData['review'],
-            date_added: reviewData['date_added'],
-            user_score: usersInfo[index].userScore,
-            user_id: reviewData['userId'],
-            nickname: usersInfo[index].nickname, 
-            own_review: this.firebaseService.user?.uid === reviewData['userId'],
-            animeId: animeUID
-          });
-        });
-        this._reviews.next(reviews);
-        console.log(this._reviews.value);
-        observer.next(reviews);
-        observer.complete();
-      })
-
-    })
-  }*/
 
   async deleteReview(review: Review) { // Borrar reseña
     let collectionName = `animes/${review.animeId}/reviews`;

@@ -41,7 +41,6 @@ export class AnimePage implements OnInit {
         this.anime.setAnime(animeData).subscribe(response => {
           this.animeLoaded = true;
         });
-        //this.reviewService.getReviews().subscribe();
       });
     });
   }

@@ -22,8 +22,6 @@ export class LibraryService {
   public anime: Anime | null = null;
 
   constructor(
-    private auth: AuthService,
-    private apiService: ApiService,
     private animeService: AnimeService,
     private firebaseService: FirebaseService,
     private firebaseAuth: FirebaseAuthService
