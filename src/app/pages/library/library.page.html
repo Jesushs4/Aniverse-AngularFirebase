@@ -10,7 +10,7 @@
     >
     </app-anime-card>
   </div>
-  <ion-button (click)="shareLibrary()">
+  <ion-button *ngIf="isCapacitor" (click)="shareLibrary()">
     <ion-icon name="share-social-outline"></ion-icon>
   </ion-button>
 </ion-content>

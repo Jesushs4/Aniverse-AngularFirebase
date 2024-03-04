@@ -57,6 +57,7 @@ export class FirebaseService {
         }
       } else{
         this._isLogged.next(false);
+        this.router.navigate(['/login'])
       }
       
     });
