@@ -52,7 +52,6 @@ export class FirebaseService {
       if(user){
         if(user.uid && user.email){
             this._isLogged.next(true);
-            console.log("LOGUEADO")
             this.router.navigate(['/search']);
         }
       } else{

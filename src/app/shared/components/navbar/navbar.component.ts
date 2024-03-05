@@ -6,6 +6,8 @@ import { NicknameFormComponent } from '../nickname-form/nickname-form.component'
 import { Observable, lastValueFrom } from 'rxjs';
 import { ApiService } from 'src/app/core/services/strapi/api.service';
 import { CustomTranslateService } from 'src/app/core/services/custom-translate.service';
+import { FirebaseAuthService } from 'src/app/core/services/firebase/firebase-auth.service';
+import { FirebaseService } from 'src/app/core/services/firebase.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,11 +22,11 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private auth: AuthService,
+    private auth: FirebaseAuthService,
     private menu: MenuController,
     private modal: ModalController,
     private toast: ToastController,
-    private apiService: ApiService,
+    private firebaseService: FirebaseService,
     private translate: CustomTranslateService
   ) {
     let browserLang = translate.getBrowserLang();
@@ -82,19 +84,13 @@ export class NavbarComponent implements OnInit {
   private setNickname(name: any): Observable<string> {
     return new Observable(observer => {
       this.auth.me().subscribe(async user => {
-        let response = await lastValueFrom(this.apiService.get(`/extended-users?filters[user_id][id][$eq]=${user.id}`))
-        let extendeduser_id = response.data[0].id
-        let nickname = {
-          data: {
-            nickname: name.nickname
-          }
-        }
-        let changeNickname = await lastValueFrom(this.apiService.put(`/extended-users/${extendeduser_id}`, nickname))
-        observer.next(name)
-        observer.complete();
-      })
-    })
 
+          await this.firebaseService.updateDocumentField('users/', user.uuid!, 'nickname', name.nickname);
+          observer.next(name);
+          observer.complete();
+        
+      });
+    });
   }
 
   async presentNickname(data: string | null, onDismiss: (result: any) => void) {
