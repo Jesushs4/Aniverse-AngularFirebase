@@ -3,10 +3,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { IonInput, IonPopover } from '@ionic/angular';
 import { lastValueFrom } from 'rxjs';
 import { Genre } from 'src/app/core/interfaces/genre';
-import { FirebaseService } from 'src/app/core/services/firebase.service';
-import { FirebaseAuthService } from 'src/app/core/services/firebase/firebase-auth.service';
+import { FirebaseService } from 'src/app/core/services/firebase/firebase.service';
+import { FirebaseAuthService } from 'src/app/core/services/api/firebase/firebase-auth.service';
 import { LibraryService } from 'src/app/core/services/library.service';
-import { ApiService } from 'src/app/core/services/strapi/api.service';
+import { ApiService } from 'src/app/core/services/api/api.service';
 
 export const GENRESEARCH_SELECTABLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,

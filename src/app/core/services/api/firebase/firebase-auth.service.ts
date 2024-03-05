@@ -1,9 +1,9 @@
 import { Observable, from, map } from 'rxjs';
-import { UserCredentials } from '../../interfaces/user-credentials';
-import { UserRegisterInfo } from '../../interfaces/user-register-info';
-import { User } from '../../interfaces/user';
+import { UserCredentials } from '../../../interfaces/user-credentials';
+import { UserRegisterInfo } from '../../../interfaces/user-register-info';
+import { User } from '../../../interfaces/user';
 import { AuthService } from '../auth.service';
-import { FirebaseService, FirebaseUserCredential } from '../firebase.service';
+import { FirebaseService, FirebaseUserCredential } from '../../firebase/firebase.service';
 import { Injectable } from '@angular/core';
 
 

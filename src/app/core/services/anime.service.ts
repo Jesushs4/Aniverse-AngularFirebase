@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Anime } from '../interfaces/anime';
 import { Observable, catchError, finalize, from, lastValueFrom, map, mergeMap, of, switchMap, tap, throwError } from 'rxjs';
-import { FirebaseAuthService } from './firebase/firebase-auth.service';
-import { FirebaseService } from './firebase.service';
+import { FirebaseAuthService } from './api/firebase/firebase-auth.service';
+import { FirebaseService } from './firebase/firebase.service';
 import { ToastController, ToastOptions } from '@ionic/angular';
 import { CustomTranslateService } from './custom-translate.service';
 

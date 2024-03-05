@@ -1,13 +1,13 @@
 import { Injectable, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, filter, last, lastValueFrom, switchMap } from 'rxjs';
 import { CreateReview, Review } from '../interfaces/review';
-import { AuthService } from './auth.service';
+import { AuthService } from './api/auth.service';
 import { LibraryService } from './library.service';
-import { ApiService } from './strapi/api.service';
+import { ApiService } from './api/api.service';
 import { Anime } from '../interfaces/anime';
 import { ToastController, ToastOptions } from '@ionic/angular';
 import { CustomTranslateService } from './custom-translate.service';
-import { FirebaseService } from './firebase.service';
+import { FirebaseService } from './firebase/firebase.service';
 
 @Injectable({
   providedIn: 'root'

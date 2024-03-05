@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Review } from 'src/app/core/interfaces/review';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { FirebaseService } from 'src/app/core/services/firebase.service';
+import { AuthService } from 'src/app/core/services/api/auth.service';
+import { FirebaseService } from 'src/app/core/services/firebase/firebase.service';
 
 @Pipe({
   name: 'userReview'

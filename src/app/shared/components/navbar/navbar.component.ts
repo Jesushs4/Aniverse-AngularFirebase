@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController, ModalController, ToastController, ToastOptions } from '@ionic/angular';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { AuthService } from 'src/app/core/services/api/auth.service';
 import { NicknameFormComponent } from '../nickname-form/nickname-form.component';
 import { Observable, lastValueFrom } from 'rxjs';
-import { ApiService } from 'src/app/core/services/strapi/api.service';
+import { ApiService } from 'src/app/core/services/api/api.service';
 import { CustomTranslateService } from 'src/app/core/services/custom-translate.service';
-import { FirebaseAuthService } from 'src/app/core/services/firebase/firebase-auth.service';
-import { FirebaseService } from 'src/app/core/services/firebase.service';
+import { FirebaseAuthService } from 'src/app/core/services/api/firebase/firebase-auth.service';
+import { FirebaseService } from 'src/app/core/services/firebase/firebase.service';
 
 @Component({
   selector: 'app-navbar',

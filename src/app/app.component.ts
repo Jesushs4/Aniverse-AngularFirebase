@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from './core/services/auth.service';
+import { AuthService } from './core/services/api/auth.service';
 import { Router } from '@angular/router';
 import { CustomTranslateService } from './core/services/custom-translate.service';
 import { TranslateService } from '@ngx-translate/core';
