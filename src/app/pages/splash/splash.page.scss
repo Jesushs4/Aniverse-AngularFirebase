@@ -1,18 +1,17 @@
-.splash-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .centered-image {
-    text-align: center;
-    margin-top: 7rem;
-  }
-  
-  .centered-image img {
-    max-width: 100%;
-    max-height: 100%;
-    width: 30%;
-    height: 30%;
-    margin: 0 auto;
-  }
+.centered-image {
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 600px;
+}
+
+.centered-image img {
+  max-width: 100%;
+  max-height: 50vh; /* Ajusta la altura máxima según tus preferencias */
+  width: auto;
+  height: auto;
+  margin: 0 auto;
+}

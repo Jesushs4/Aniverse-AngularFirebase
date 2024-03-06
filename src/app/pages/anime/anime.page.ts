@@ -60,6 +60,10 @@ export class AnimePage implements OnInit {
     speak();
   }
 
+  stopSpeech() {
+    TextToSpeech.stop();
+  }
+
   scrollToReviews() {
     let reviewsElement = document.getElementById('reviewTitle');
     if (reviewsElement) {

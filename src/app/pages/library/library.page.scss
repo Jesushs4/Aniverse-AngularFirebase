@@ -5,3 +5,14 @@
     gap: 1rem;
     padding: 1rem; 
 }
+
+.container {
+    position: relative;
+    width: 100%;
+  }
+  
+  #floating-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+  }

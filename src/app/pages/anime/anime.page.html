@@ -32,6 +32,9 @@
               <ion-button *ngIf="isCapacitor" (click)="textToSpeech()">
                 <ion-icon name="volume-high-outline"></ion-icon>
               </ion-button>
+              <ion-button *ngIf="isCapacitor" (click)="stopSpeech()">
+                <ion-icon name="stop-outline"></ion-icon>
+              </ion-button>
             </div>
             <div class="anime-info">
               <ion-text
